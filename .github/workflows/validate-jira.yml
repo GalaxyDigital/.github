@@ -73,3 +73,8 @@ jobs:
             ${{ steps.pr_check.outputs.pr_failed == 'true' && '- ❌ PR title does not contain a Jira ticket ID.' || '' }}
             Please make sure your **branch name** and **PR title** include a Jira ticket ID (e.g. `DEV-123`).
 
+      - name: Fail workflow if PR validation failed
+        if: ${{ steps.pr_check.outputs.pr_failed == 'true' }}
+        run: |
+          echo "❌ PR validation failed. Failing the job."
+          exit 1
