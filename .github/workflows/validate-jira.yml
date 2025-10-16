@@ -13,6 +13,18 @@ on:
         required: false
         default: true
         type: boolean
+      event_name:        
+        description: 'Event name from calling workflow'
+        required: true
+        type: string
+      ref_name:           
+        description: 'Branch name or head ref from calling workflow'
+        required: true
+        type: string
+      pr_title:          
+        description: 'PR title (if pull_request event)'
+        required: false
+        type: string
 
 jobs:
   validate:
