@@ -7,10 +7,12 @@ on:
         description: 'Whether to enforce Jira ID in PR title'
         required: false
         default: true
+        type: boolean
       enforce_branch_name:
         description: 'Whether to enforce Jira ID in branch name'
         required: false
         default: true
+        type: boolean
 
 jobs:
   validate:
