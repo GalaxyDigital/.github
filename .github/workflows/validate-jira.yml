@@ -36,7 +36,6 @@ jobs:
         run: |
           pattern='[A-Z]{2,}-[0-9]+'
           branch="${GITHUB_REF_NAME}"
-          echo inputs.event_name
           echo "🔍 Checking branch name: $branch"
           if ! echo "$branch" | grep -Eq "$pattern"; then
             echo "branch_failed=true" >> $GITHUB_OUTPUT
@@ -64,7 +63,7 @@ jobs:
           fi
 
       - name: Comment on PR if validation failed
-        if: ${{ github.event_name == 'pull_request' && (steps.branch_check.outputs.branch_failed == 'true' || steps.pr_check.outputs.pr_failed == 'true') }}
+        if: ${{ inputs.event_name == 'pull_request' && (steps.branch_check.outputs.branch_failed == 'true' || steps.pr_check.outputs.pr_failed == 'true') }}
         uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
