@@ -1,0 +1,60 @@
+name: Validate Jira Ticket ID
+
+on:
+  workflow_call:
+    inputs:
+      enforce_pr_title:
+        description: 'Whether to enforce Jira ID in PR title'
+        required: false
+        default: true
+      enforce_branch_name:
+        description: 'Whether to enforce Jira ID in branch name'
+        required: false
+        default: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        id: branch_check
+        run: |
+          pattern='[A-Z]{2,}-[0-9]+'
+          branch="${GITHUB_REF_NAME}"
+          echo "🔍 Checking branch name: $branch"
+          if ! echo "$branch" | grep -Eq "$pattern"; then
+            echo "branch_failed=true" >> $GITHUB_OUTPUT
+            echo "❌ Branch name must include a Jira ticket ID (e.g. DEV-123-feature-name)"
+            exit 1
+          else
+            echo "branch_failed=false" >> $GITHUB_OUTPUT
+            echo "✅ Branch name is valid."
+          fi
+
+      - name: Validate PR title (if applicable)
+        id: pr_check
+        if: ${{ github.event_name == 'pull_request' && inputs.enforce_pr_title == 'true' }}
+        run: |
+          pattern='[A-Z]{2,}-[0-9]+'
+          title="${{ github.event.pull_request.title }}"
+          echo "🔍 Checking PR title: $title"
+          if ! echo "$title" | grep -Eq "$pattern"; then
+            echo "pr_failed=true" >> $GITHUB_OUTPUT
+            echo "❌ PR title must include a Jira ticket ID (e.g. DEV-123 | Add feature)"
+            exit 1
+          else
+            echo "pr_failed=false" >> $GITHUB_OUTPUT
+            echo "✅ PR title is valid."
+          fi
+
+      - name: Comment on PR if validation failed
+        if: ${{ github.event_name == 'pull_request' && (steps.branch_check.outputs.branch_failed == 'true' || steps.pr_check.outputs.pr_failed == 'true') }}
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ⚠️ **Jira Validation Failed**
+            ${{ steps.branch_check.outputs.branch_failed == 'true' && '- ❌ Branch name does not contain a Jira ticket ID.' || '' }}
+            ${{ steps.pr_check.outputs.pr_failed == 'true' && '- ❌ PR title does not contain a Jira ticket ID.' || '' }}
+            Please make sure your **branch name** and **PR title** include a Jira ticket ID (e.g. `DEV-123`).
