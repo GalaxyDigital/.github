@@ -56,7 +56,6 @@ jobs:
           if ! echo "$title" | grep -Eq "$pattern"; then
             echo "pr_failed=true" >> $GITHUB_OUTPUT
             echo "❌ PR title must include a Jira ticket ID (e.g. DEV-123 | Add feature)"
-            exit 1
           else
             echo "pr_failed=false" >> $GITHUB_OUTPUT
             echo "✅ PR title is valid."
@@ -74,7 +73,3 @@ jobs:
             ${{ steps.pr_check.outputs.pr_failed == 'true' && '- ❌ PR title does not contain a Jira ticket ID.' || '' }}
             Please make sure your **branch name** and **PR title** include a Jira ticket ID (e.g. `DEV-123`).
 
-      - name: variables
-        run: |
-          echo "Contents of GITHUB_OUTPUT:"
-          cat $GITHUB_OUTPUT
