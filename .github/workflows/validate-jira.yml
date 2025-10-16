@@ -48,7 +48,7 @@ jobs:
 
       - name: Validate PR title (if applicable)
         id: pr_check
-        if: ${{ github.event_name == 'pull_request' && inputs.enforce_pr_title == 'true' }}
+        if: ${{ inputs.event_name == 'pull_request' && inputs.enforce_pr_title == 'true' }}
         run: |
           pattern='[A-Z]{2,}-[0-9]+'
           title="${{ github.event.pull_request.title }}"
