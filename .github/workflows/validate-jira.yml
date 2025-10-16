@@ -32,10 +32,11 @@ jobs:
     steps:
       - name: Validate branch name
         id: branch_check
-        if: ${{ inputs.enforce_branch_name && github.event_name == 'push' }}
+        if: ${{ inputs.enforce_branch_name && inputs.event_name == 'push' }}
         run: |
           pattern='[A-Z]{2,}-[0-9]+'
           branch="${GITHUB_REF_NAME}"
+          echo inputs.event_name
           echo "🔍 Checking branch name: $branch"
           if ! echo "$branch" | grep -Eq "$pattern"; then
             echo "branch_failed=true" >> $GITHUB_OUTPUT
