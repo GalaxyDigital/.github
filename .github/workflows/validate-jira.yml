@@ -73,3 +73,8 @@ jobs:
             ${{ steps.branch_check.outputs.branch_failed == 'true' && '- ❌ Branch name does not contain a Jira ticket ID.' || '' }}
             ${{ steps.pr_check.outputs.pr_failed == 'true' && '- ❌ PR title does not contain a Jira ticket ID.' || '' }}
             Please make sure your **branch name** and **PR title** include a Jira ticket ID (e.g. `DEV-123`).
+
+      - name: variables
+        run: |
+          echo "Contents of GITHUB_OUTPUT:"
+          cat $GITHUB_OUTPUT
